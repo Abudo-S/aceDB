@@ -1,0 +1,72 @@
+create table person
+(
+id int primary key unique auto_increment ,
+first_name varchar(15) not null,
+last_name varchar(15) not null,
+info varchar(500) not null,
+birth_date date not null,
+combined_data  varchar(50) unique not null comment 'combination of name&birth_date',
+actor_type varchar(10) not null,
+check(birth_date >'1940-12-31')
+);
+
+create table facilitator
+(
+id int not null,
+qualification varchar(50),
+FOREIGN KEY (id) references person(id)  on delete cascade on update cascade
+);
+
+create table assistant
+(
+id int not null,
+FOREIGN KEY (id) references person(id)  on delete cascade on update cascade
+);
+
+create table room
+(
+id int not null ,
+venue_id int not null ,
+max_capacity int not null,
+FOREIGN KEY (venue_id) references venue(id)  on delete cascade on update cascade
+);
+
+create table member
+(
+id int not null unique,
+event_id int ,
+FOREIGN KEY (id) references person(id)  on delete cascade on update cascade
+);
+
+create table open_to_public_event
+(
+id int not null,
+FOREIGN KEY (id) references event(id)  on delete cascade on update cascade
+);
+
+create table event
+(
+id int primary key unique,
+facilitator_id int,
+venue_id int,
+room_id int,
+date_time DATETIME ,
+type varchar(10) not null,
+FOREIGN KEY (facilitator_id) references facilitator(id)  on delete cascade on update cascade,
+FOREIGN KEY (venue_id) references (venue_id) venue(id)  on delete cascade on update cascade
+);
+
+create table exclusive_to_business_event
+(
+id int not null,
+assistant_id int ,
+name_of_business varchar(50),
+FOREIGN KEY (id) references event(id)  on delete cascade on update cascade,
+FOREIGN KEY (assistant_id) references assistant(id)  on delete cascade on update cascade
+);
+
+ALTER table event 
+ADD event_info varchar(500) comment 'venue_id&room_id&date_time';
+
+ALTER table event 
+ADD CONSTRAINT check_event UNIQUE (event_info); 
